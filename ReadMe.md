@@ -21,7 +21,8 @@ junior_python_developer_project/
 │   └── vacancies.db          # SQLite database file
 │
 ├── main.py                   # Main entry point to run both parser and bot concurrently
-└── requirements.txt          # Main dependencies for the entire project
+├── requirements.txt          # Main dependencies for the entire project
+└── .env                      # Environment variables for sensitive information
 ```
 
 ## Installation Instructions
@@ -51,6 +52,17 @@ Install the dependencies listed in the `requirements.txt` file:
 ```bash
 pip install -r requirements.txt
 ```
+
+### 4. Set Up Environment Variables
+
+Create a `.env` file in the root directory of the project and add your Telegram bot token:
+
+```plaintext
+# .env
+BOT_TOKEN="YOUR_BOT_TOKEN"
+```
+
+Replace `YOUR_BOT_TOKEN` with the actual token you received from BotFather.
 
 ## Running the Project
 
