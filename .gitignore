@@ -195,3 +195,4 @@ venv
 venv.bak/
 venv/
 wheels/
+.xlsx
