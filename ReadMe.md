@@ -8,12 +8,10 @@ junior_python_developer_project/
 ├── parser/
 │   ├── __init__.py
 │   ├── parser.py             # Main script for parsing vacancies
-│   └── requirements.txt      # Dependencies for the parser
 │
 ├── bot/
 │   ├── __init__.py
 │   ├── bot.py                # Telegram bot implementation
-│   └── requirements.txt      # Dependencies for the bot
 │
 ├── database/
 │   ├── __init__.py
@@ -32,7 +30,7 @@ junior_python_developer_project/
 First, clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/yourusername/junior_python_developer_project.git
+git clone https://github.com/Gomuro/junior_python_developer_project.git
 cd junior_python_developer_project
 ```
 
