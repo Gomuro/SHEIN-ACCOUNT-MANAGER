@@ -290,4 +290,12 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    import undetected_chromedriver as uc
+    from selenium.webdriver.chrome.service import Service
+
+    options = uc.ChromeOptions()
+    driver = uc.Chrome(options=options)
+    driver.get('https://www.shein.com/')
+    print(driver.title)
+    driver.quit()
+

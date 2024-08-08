@@ -1,15 +1,20 @@
 import json
+import threading
+import time
 import uuid
 
 import selenium
+from PyQt6.QtCore import Qt, QThreadPool
 
 from GLOBAL import GLOBAL
 from driver.driver import TwitterBotDriver
-from emulator_setup.setup_emulator import AndroidEmulatorManager
+
 from proxy import Proxy, EmptyProxy
 from sqlalchemy import create_engine, Column, String, Text
 from sqlalchemy.orm import sessionmaker, declarative_base
-from PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtWidgets import QMessageBox, QProgressDialog
+
+from utils.terminal import Terminal
 
 Base = declarative_base()
 
@@ -173,24 +178,45 @@ def delete_accounts(account_names):
     session.commit()
 
 
-def create_and_save_phone_emulator(account_name, avd_name='Pixel_3a_API_31', proxy: Proxy | EmptyProxy = EmptyProxy()):
-    emulator = AndroidEmulatorManager(account_name, avd_name, proxy)
-    result = emulator.setup()
-    if result.status == 'success':
-        QMessageBox.information(None, "Success", "Phone emulator created and saved.")
-    elif result.status == 'warning':
-        if result.reason == 'proxy already taken. not recommended to use.':
-            #ask user if they want to use the same proxy
-            reply = QMessageBox.question(None, "Warning", "Proxy already taken. Do you want to use the same proxy?",
-                                         QMessageBox.Yes | QMessageBox.No)
-            if reply == QMessageBox.Yes:
-                result = emulator.setup(let_same_proxy=True)
-                if result.status == 'success':
-                    QMessageBox.information(None, "Success", "Phone emulator created and saved.")
-                else:
-                    QMessageBox.critical(None, "Error", result.reason)
+def create_and_save_phone_emulator(image_name=None, device_name=None, avd_name=None,
+                                   proxy: Proxy | EmptyProxy = EmptyProxy()):
+    terminal = Terminal()
+    if not avd_name:
+        QMessageBox.critical(None, "Error", "AVD name is required.")
+        return
 
-        else:
-            QMessageBox.critical(None, "Error", result.reason)
-    else:
-        QMessageBox.critical(None, "Error", result.reason)
+    if EmptyProxy == type(proxy):
+        QMessageBox.critical(None, "Error", "Proxy is required.")
+        return
+
+    if not image_name:
+        QMessageBox.critical(None, "Error", "Image name is required.")
+        return
+
+    if not device_name:
+        QMessageBox.critical(None, "Error", "Device name is required.")
+        return
+
+    # Show progress dialog
+    progress = QProgressDialog("Creating AVD, please wait...", "Cancel", 0, 100)
+    progress.setWindowModality(Qt.WindowModality.WindowModal)
+    progress.setCancelButton(None)
+    progress.setMinimumDuration(0)
+    progress.setValue(0)
+    progress.show()
+    progress_value = 0
+    progress.setValue(progress_value)
+
+    def run():
+        terminal.execute_command(
+            f'{GLOBAL.PATH.CMDLINE_TOOLS_PATH}\\avdmanager.bat create avd -n {avd_name} -k "system-images;android-35;google_apis_playstore_ps16k;x86_64" -d {device_name}')
+        terminal.execute_command(
+            f'{GLOBAL.PATH.PLATFORM_TOOLS_PATH}\\adb.bat -s {proxy}emu.launcher name {avd_name} {image_name}'
+        )
+
+    thread = threading.Thread(target=run)
+    thread.start()
+
+    while thread.is_alive():
+        progress_value += 1
+        progress.setValue(progress_value)

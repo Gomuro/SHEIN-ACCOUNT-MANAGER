@@ -7,6 +7,10 @@ class GLOBAL:
         APPLICATION_ROOT = f'{os.path.expanduser('~/SheinBumper')}'
         ANDROID_EMULATOR_PATH = f'{os.path.expanduser('~/AppData/Local/Android/Sdk/emulator/emulator.exe')}'
         ANDROID_SDK_PATH = f'{os.path.expanduser('~/AppData/Local/Android/Sdk')}'
+        CMDLINE_TOOLS_PATH = os.path.join(ANDROID_SDK_PATH, 'cmdline-tools', 'latest', 'bin')
+        SDK_MANAGER_PATH = os.path.join(ANDROID_SDK_PATH, 'cmdline-tools', 'latest', 'bin', 'sdkmanager.bat')
+        AVD_MANAGER_PATH = os.path.join(ANDROID_SDK_PATH, 'cmdline-tools', 'latest', 'bin', '.\\avdmanager.bat')
+        PLATFORM_TOOLS_PATH = os.path.join(ANDROID_SDK_PATH, 'platform-tools')
         LOGS = f'{APPLICATION_ROOT}/log.txt'
         BOT_LOGS_ROOT = f'{APPLICATION_ROOT}/botLogs'
         STATISTIC_PATH = f'{APPLICATION_ROOT}/botStatistic'
