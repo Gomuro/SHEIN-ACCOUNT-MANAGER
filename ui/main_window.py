@@ -4,9 +4,11 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QMessageB
 from ui.account_form import AccountForm
 from ui.account_selector import AccountSelector
 from ui.phone_account_form import PhoneAccountForm
+from ui.phone_account_selector import PhoneAccountSelector
 from ui.update_account_form import UpdateAccountForm
 from ui.delete_accounts_selector import DeleteAccountsSelector
 from helpers import open_account, updated_account_cookies, delete_accounts, create_and_save_phone_emulator
+
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -48,18 +50,37 @@ class MainWindow(QWidget):
         self.create_emulator_button.clicked.connect(self.create_and_save_emulator)
         self.layout.addWidget(self.create_emulator_button)
 
+        self.open_emulator_button = QPushButton("Open Phone Emulator")
+        self.open_emulator_button.clicked.connect(self.open_emulator)
+        self.layout.addWidget(self.open_emulator_button)
+
+        self.update_phone_emulator_button = QPushButton("Update Phone Emulator")
+        self.update_phone_emulator_button.clicked.connect(self.update_phone_emulator)
+        self.layout.addWidget(self.update_phone_emulator_button)
+
+        self.delete_phone_emulator_button = QPushButton("Delete Phone Emulator")
+        self.delete_phone_emulator_button.clicked.connect(self.delete_phone_emulator_select)
+        self.layout.addWidget(self.delete_phone_emulator_button)
+
         self.quit_button = QPushButton("Quit")
         self.quit_button.clicked.connect(self.close)
         self.layout.addWidget(self.quit_button)
 
+        """
+        Initialization of forms widgets and selectors
+        """
+        self.account_form = AccountForm()
+        self.account_selector = AccountSelector()
+        self.delete_selector = DeleteAccountsSelector()
+        self.phone_account_form = PhoneAccountForm()
+        self.phone_account_selector = PhoneAccountSelector()
+
     def add_account(self):
         """Open the form to add a new account."""
-        self.account_form = AccountForm()
         self.account_form.show()
 
     def open_account(self):
         """Open the account selector to choose an existing account."""
-        self.account_selector = AccountSelector()
         self.account_selector.account_selected.connect(open_account)
         self.account_selector.show()
 
@@ -77,7 +98,6 @@ class MainWindow(QWidget):
 
     def delete_accounts(self):
         """Open the selector to choose accounts to delete."""
-        self.delete_selector = DeleteAccountsSelector()
         self.delete_selector.accounts_selected.connect(self.confirm_delete_accounts)
         self.delete_selector.show()
 
@@ -103,9 +123,26 @@ class MainWindow(QWidget):
             QMessageBox.information(self, "Accounts Deleted", "Selected accounts have been deleted.")
 
     def create_and_save_emulator(self):
-        self.phone_account_form = PhoneAccountForm()
+
         self.phone_account_form.show()
 
+    def open_emulator(self):
+        self.phone_account_selector.phone_account_selected.connect(self.open_phone_emulator)
+        self.phone_account_selector.show()
 
+    def open_phone_emulator(self, phone_account):
+        self.phone_account_selector.close()
 
+    def update_phone_emulator(self):
+        self.phone_account_selector.phone_account_selected.connect(self.update_phone_emulator_form)
+        self.phone_account_selector.show()
 
+    def update_phone_emulator_form(self, phone_account):
+        self.phone_account_selector.close()
+
+    def delete_phone_emulator_select(self):
+        self.phone_account_selector.phone_account_selected.connect(self.delete_phone_emulator)
+        self.phone_account_selector.show()
+
+    def delete_phone_emulator(self, phone_account):
+        self.phone_account_selector.close()
