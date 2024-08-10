@@ -143,6 +143,7 @@ class MainWindow(QWidget):
         self.phone_account_selector.show()
 
     def open_phone_emulator(self, phone_account):
+        Terminal.open_emulator(phone_account)
         self.phone_account_selector.close()
 
     def update_phone_emulator_select(self):

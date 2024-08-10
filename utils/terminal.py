@@ -1,5 +1,7 @@
 import re
 import subprocess
+from utils.worker import WorkerThread
+
 from GLOBAL import GLOBAL
 
 
@@ -66,12 +68,6 @@ class Terminal:
             f'{GLOBAL.PATH.SDK_MANAGER_PATH} --install "system-images;android-35;google_apis_playstore_ps16k;x86_64"')
         return result
 
-    import subprocess
-
-    import subprocess
-
-    import subprocess
-
     @classmethod
     def list_initialized_emulators(cls) -> list:
         """List initialized emulators using emulator -list-avds."""
@@ -103,11 +99,15 @@ class Terminal:
         except Exception as e:
             print(f"An error occurred while listing emulators: {e}")
 
-
+    @classmethod
+    def open_emulator(cls, avd_name):
+        """Open an emulator using emulator -avd."""
+        worker = WorkerThread(cls.execute_command, f'{GLOBAL.PATH.ANDROID_EMULATOR_PATH}\\emulator -avd {avd_name}')
+        worker.start()
 """
 test
 """
 if __name__ == '__main__':
     terminal = Terminal()
 
-    print(terminal.list_initialized_emulators())
+    print(terminal.open_emulator('SDE1'))
