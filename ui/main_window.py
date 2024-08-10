@@ -61,7 +61,7 @@ class MainWindow(QWidget):
         self.layout.addWidget(self.open_emulator_button)
 
         self.update_phone_emulator_button = QPushButton("Update Phone Emulator")
-        self.update_phone_emulator_button.clicked.connect(self.update_phone_emulator)
+        self.update_phone_emulator_button.clicked.connect(self.update_phone_emulator_select)
         self.layout.addWidget(self.update_phone_emulator_button)
 
         self.delete_phone_emulator_button = QPushButton("Delete Phone Emulator")
@@ -145,11 +145,11 @@ class MainWindow(QWidget):
     def open_phone_emulator(self, phone_account):
         self.phone_account_selector.close()
 
-    def update_phone_emulator(self):
-        self.phone_account_selector.phone_account_selected.connect(self.update_phone_emulator_form)
+    def update_phone_emulator_select(self):
+        self.phone_account_selector.phone_account_selected.connect(self.update_phone_emulator)
         self.phone_account_selector.show()
 
-    def update_phone_emulator_form(self, phone_account):
+    def update_phone_emulator(self, phone_account):
         self.phone_account_selector.close()
 
     def delete_phone_emulator_select(self):
