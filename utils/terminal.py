@@ -34,7 +34,8 @@ class Terminal:
                     num = parts[1]
                     human_name = parts[2]
                     path = parts[3]
-                    formatted_system_images.append({'program_name': program_name, 'num': num, 'human_name': human_name,path: path})
+                    formatted_system_images.append(
+                        {'program_name': program_name, 'num': num, 'human_name': human_name, path: path})
 
             return formatted_system_images
         except subprocess.CalledProcessError as e:
@@ -49,7 +50,8 @@ class Terminal:
         try:
             result = subprocess.run([GLOBAL.PATH.AVD_MANAGER_PATH, 'list', 'devices'], capture_output=True, text=True,
                                     check=True)
-            list_devices = [re.search(r'"([^"]*)"', line).group(1) for line in result.stdout.splitlines() if 'id: ' in line]
+            list_devices = [re.search(r'"([^"]*)"', line).group(1) for line in result.stdout.splitlines() if
+                            'id: ' in line]
             return list_devices
         except subprocess.CalledProcessError as e:
             print(f"Error: {e}")
@@ -64,6 +66,42 @@ class Terminal:
             f'{GLOBAL.PATH.SDK_MANAGER_PATH} --install "system-images;android-35;google_apis_playstore_ps16k;x86_64"')
         return result
 
+    import subprocess
+
+    import subprocess
+
+    import subprocess
+
+    @classmethod
+    def list_initialized_emulators(cls) -> list:
+        """List initialized emulators using emulator -list-avds."""
+        try:
+            # Define the command
+            command = f'{GLOBAL.PATH.ANDROID_EMULATOR_PATH}\\emulator -list-avds'
+
+            # Execute the command
+            result = subprocess.run(command, shell=True, text=True, capture_output=True)
+
+            # Check if the command was successful
+            if result.returncode == 0:
+                # Process stdout to extract emulator names only
+                lines = result.stdout.splitlines()
+                # Filter out any empty or None values
+                emulators = [line for line in lines if line.strip()]
+
+                print("Initialized emulators:")
+                result_list = []
+                for emulator in emulators:
+                    if "SDE" in emulator:
+                        print(emulator)
+                        result_list.append(emulator)
+
+                return result_list
+            else:
+                print(f"Error: {result.stderr}")
+
+        except Exception as e:
+            print(f"An error occurred while listing emulators: {e}")
 
 
 """
@@ -71,8 +109,5 @@ test
 """
 if __name__ == '__main__':
     terminal = Terminal()
-    print(terminal.execute_command(
-        f'{GLOBAL.PATH.CMDLINE_TOOLS_PATH}\\avdmanager.bat create avd -n test3 -k "system-images;android-35;google_apis_playstore_ps16k;x86_64" -d pixel_6'))
 
-    print(terminal.available_system_images())
-    print(terminal.list_available_devices())
+    print(terminal.list_initialized_emulators())

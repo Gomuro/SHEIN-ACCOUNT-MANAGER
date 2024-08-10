@@ -1,6 +1,10 @@
+import uuid
+from typing import List
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QMessageBox
 
+from proxy import EmptyProxy
 from ui.account_form import AccountForm
 from ui.account_selector import AccountSelector
 from ui.phone_account_form import PhoneAccountForm
@@ -8,6 +12,8 @@ from ui.phone_account_selector import PhoneAccountSelector
 from ui.update_account_form import UpdateAccountForm
 from ui.delete_accounts_selector import DeleteAccountsSelector
 from helpers import open_account, updated_account_cookies, delete_accounts, create_and_save_phone_emulator
+from database import session, Phone_emulator
+from utils.terminal import Terminal
 
 
 class MainWindow(QWidget):
@@ -67,7 +73,13 @@ class MainWindow(QWidget):
         self.layout.addWidget(self.quit_button)
 
         """
-        Initialization of forms widgets and selectors
+        initialization of database phone emulator data table
+        """
+
+        self.init_phone_emulator_table()
+
+        """
+            Initialization of forms widgets and selectors
         """
         self.account_form = AccountForm()
         self.account_selector = AccountSelector()
@@ -146,3 +158,35 @@ class MainWindow(QWidget):
 
     def delete_phone_emulator(self, phone_account):
         self.phone_account_selector.close()
+
+    def init_phone_emulator_table(self):
+        """Initialize the phone emulator table by adding new emulator data to the database."""
+        phone_emulators = self.get_phone_emulators()
+        existing_emulator_avd_names = {
+            emulator.avd_name for emulator in session.query(Phone_emulator).all()
+        }
+
+        new_emulators = [
+            emulator for emulator in phone_emulators
+            if emulator not in existing_emulator_avd_names
+        ]
+
+        new_emulator_data = [
+            Phone_emulator(
+                id=str(uuid.uuid4()),
+                proxy=EmptyProxy.to_user_format_string(EmptyProxy()),
+                avd_name=emulator,
+                account_name=emulator
+            )
+            for emulator in new_emulators
+        ]
+
+        if new_emulator_data:
+            session.add_all(new_emulator_data)
+            session.commit()
+
+    @staticmethod
+    def get_phone_emulators() -> List[str]:
+        """Return a list of initialized emulator names."""
+        terminal = Terminal()
+        return terminal.list_initialized_emulators()

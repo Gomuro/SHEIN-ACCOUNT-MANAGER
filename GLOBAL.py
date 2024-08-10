@@ -5,7 +5,7 @@ from enum import Enum
 class GLOBAL:
     class PATH:
         APPLICATION_ROOT = f'{os.path.expanduser('~/SheinBumper')}'
-        ANDROID_EMULATOR_PATH = f'{os.path.expanduser('~/AppData/Local/Android/Sdk/emulator/emulator.exe')}'
+        ANDROID_EMULATOR_PATH = f'{os.path.expanduser('~/AppData/Local/Android/Sdk/emulator')}'
         ANDROID_SDK_PATH = f'{os.path.expanduser('~/AppData/Local/Android/Sdk')}'
         CMDLINE_TOOLS_PATH = os.path.join(ANDROID_SDK_PATH, 'cmdline-tools', 'latest', 'bin')
         SDK_MANAGER_PATH = os.path.join(ANDROID_SDK_PATH, 'cmdline-tools', 'latest', 'bin', 'sdkmanager.bat')
