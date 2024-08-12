@@ -12,7 +12,8 @@ from ui.phone_account_selector import PhoneAccountSelector
 from ui.phone_account_update_parameter_selector import PhoneAccountUpdateParameterSelector
 from ui.update_account_form import UpdateAccountForm
 from ui.delete_accounts_selector import DeleteAccountsSelector
-from helpers import open_account, updated_account_cookies, delete_accounts, create_and_save_phone_emulator
+from helpers import open_account, updated_account_cookies, delete_accounts, create_and_save_phone_emulator, \
+    delete_phone_emulator_from_db
 from database import session, Phone_emulator
 from utils.terminal import Terminal
 
@@ -136,10 +137,10 @@ class MainWindow(QWidget):
             QMessageBox.information(self, "Accounts Deleted", "Selected accounts have been deleted.")
 
     def create_and_save_emulator(self):
-
         self.phone_account_form.show()
 
     def open_emulator(self):
+        self.phone_account_selector.update()
         self.phone_account_selector.phone_account_selected.connect(self.open_phone_emulator)
         self.phone_account_selector.show()
 
@@ -148,6 +149,7 @@ class MainWindow(QWidget):
         self.phone_account_selector.close()
 
     def update_phone_emulator_select(self):
+        self.phone_account_selector.update()
         self.phone_account_selector.phone_account_selected.connect(self.update_phone_emulator)
         self.phone_account_selector.show()
 
@@ -157,10 +159,13 @@ class MainWindow(QWidget):
         # self.phone_account_selector.close()
 
     def delete_phone_emulator_select(self):
+        self.phone_account_selector.update()
         self.phone_account_selector.phone_account_selected.connect(self.delete_phone_emulator)
         self.phone_account_selector.show()
 
     def delete_phone_emulator(self, phone_account):
+        Terminal.delete_emulator(phone_account)
+        delete_phone_emulator_from_db(phone_account)
         self.phone_account_selector.close()
 
     def init_phone_emulator_table(self):

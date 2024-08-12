@@ -127,6 +127,13 @@ class Terminal:
         worker.start()
         worker.join()
 
+    @classmethod
+    def delete_emulator(cls, phone_account):
+        command = f'{GLOBAL.PATH.AVD_MANAGER_PATH} delete avd -n {phone_account}'
+        worker = WorkerThread(cls.execute_command, command)
+        worker.start()
+        worker.join()
+
 
 """
 test

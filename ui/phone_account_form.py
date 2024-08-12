@@ -1,6 +1,9 @@
+import uuid
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QMessageBox, QVBoxLayout, QComboBox
 
+from database import session, Phone_emulator
 from helpers import create_and_save_phone_emulator
 from proxy import Proxy, EmptyProxy
 from utils.terminal import Terminal
@@ -9,6 +12,10 @@ from utils.terminal import Terminal
 class PhoneAccountForm(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+
+        self.existing_emulator_avd_names = {
+            emulator.avd_name for emulator in session.query(Phone_emulator).all()
+        }
 
         self.setWindowTitle("Add new phone account")
         self.layout = QVBoxLayout()
@@ -57,19 +64,24 @@ class PhoneAccountForm(QWidget):
             self.comboBox_devices.addItem(device)
         self.layout.addWidget(self.comboBox_devices)
 
-
-
-        self.proxy_label = QLabel("Proxy:")
-        self.layout.addWidget(self.proxy_label)
-        self.proxy_input = QLineEdit()
-        self.layout.addWidget(self.proxy_input)
+        # TODO implement stupid proxy system
+        # self.proxy_label = QLabel("Proxy:")
+        # self.layout.addWidget(self.proxy_label)
+        # self.proxy_input = QLineEdit()
+        # self.layout.addWidget(self.proxy_input)
 
         self.submit_button = QPushButton("Submit")
         self.submit_button.clicked.connect(self.submit)
         self.layout.addWidget(self.submit_button)
 
     def submit(self):
-        avd_name = self.avd_name_input.text()
+        if self.avd_name_input.text() == "":
+            QMessageBox.warning(self, "Error", "Avd name cannot be empty")
+            return
+        self.avd_name = 'SDE_' + self.avd_name_input.text()
+        if self.avd_name in self.existing_emulator_avd_names:
+            QMessageBox.warning(self, "Error", "Avd name already exists")
+            return
         image_name = self.comboBox_images.currentText()
         image = None
         for image_dict in self.list_available_system_images:
@@ -77,12 +89,13 @@ class PhoneAccountForm(QWidget):
                 image = image_dict.get('program_name')
                 break
         device = self.comboBox_devices.currentText()
-        proxy = self.proxy_input.text()
+        # proxy = self.proxy_input.text()
 
-        if not self.valid_proxy(proxy):
-            QMessageBox.warning(self, "Invalid Proxy", "Please enter a valid proxy.")
-            return
-        create_and_save_phone_emulator(avd_name=avd_name, image_name=image, device_name=device, proxy=Proxy.from_user_format_string(proxy))
+        # if not self.valid_proxy(proxy):
+        #     QMessageBox.warning(self, "Invalid Proxy", "Please enter a valid proxy.")
+        #     return
+        create_and_save_phone_emulator(avd_name=self.avd_name, image_name=image, device_name=device)
+        self._save_to_db()
         self.close()
 
     @staticmethod
@@ -96,3 +109,12 @@ class PhoneAccountForm(QWidget):
             return True
         else:
             return False
+
+    def _save_to_db(self):
+        new_emulator = Phone_emulator(
+            id=str(uuid.uuid4()),
+            avd_name=self.avd_name,
+            account_name=self.avd_name_input.text(),
+            proxy=EmptyProxy.to_user_format_string(EmptyProxy()), )
+        session.add(new_emulator)
+        session.commit()

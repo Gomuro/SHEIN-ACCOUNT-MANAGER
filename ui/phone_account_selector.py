@@ -6,6 +6,7 @@ from database import Phone_emulator, session
 
 class PhoneAccountSelector(QWidget):
     phone_account_selected = pyqtSignal(str)
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -33,3 +34,10 @@ class PhoneAccountSelector(QWidget):
     def select_account(self):
         selected_account_name = self.comboBox.currentText()
         self.phone_account_selected.emit(selected_account_name)
+
+    def update(self):
+        self.comboBox.clear()
+        accounts = session.query(Phone_emulator).all()
+        sorted_accounts = sorted(accounts, key=lambda account: account.account_name)
+        for account in sorted_accounts:
+            self.comboBox.addItem(account.account_name)

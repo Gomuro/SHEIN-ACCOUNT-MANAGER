@@ -7,6 +7,7 @@ import selenium
 from PyQt6.QtCore import Qt, QThreadPool
 
 from GLOBAL import GLOBAL
+from database import Phone_emulator
 from driver.driver import TwitterBotDriver
 
 from proxy import Proxy, EmptyProxy
@@ -15,6 +16,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from PyQt6.QtWidgets import QMessageBox, QProgressDialog
 
 from utils.terminal import Terminal
+from utils.worker import WorkerThread
 
 Base = declarative_base()
 
@@ -185,9 +187,9 @@ def create_and_save_phone_emulator(image_name=None, device_name=None, avd_name=N
         QMessageBox.critical(None, "Error", "AVD name is required.")
         return
 
-    if EmptyProxy == type(proxy):
-        QMessageBox.critical(None, "Error", "Proxy is required.")
-        return
+    # if EmptyProxy == type(proxy):
+    #     QMessageBox.critical(None, "Error", "Proxy is required.")
+    #     return
 
     if not image_name:
         QMessageBox.critical(None, "Error", "Image name is required.")
@@ -210,9 +212,9 @@ def create_and_save_phone_emulator(image_name=None, device_name=None, avd_name=N
     def run():
         terminal.execute_command(
             f'{GLOBAL.PATH.CMDLINE_TOOLS_PATH}\\avdmanager.bat create avd -n {avd_name} -k "system-images;android-35;google_apis_playstore_ps16k;x86_64" -d {device_name}')
-        terminal.execute_command(
-            f'{GLOBAL.PATH.PLATFORM_TOOLS_PATH}\\adb.bat -s {proxy}emu.launcher name {avd_name} {image_name}'
-        )
+        # terminal.execute_command(
+        #     f'{GLOBAL.PATH.PLATFORM_TOOLS_PATH}\\adb.bat -s {proxy}emu.launcher name {avd_name} {image_name}'
+        # )
 
     thread = threading.Thread(target=run)
     thread.start()
@@ -220,3 +222,8 @@ def create_and_save_phone_emulator(image_name=None, device_name=None, avd_name=N
     while thread.is_alive():
         progress_value += 1
         progress.setValue(progress_value)
+
+
+def delete_phone_emulator_from_db(avd_name):
+    session.query(Phone_emulator).filter_by(avd_name=avd_name).delete()
+    session.commit()
