@@ -32,6 +32,9 @@ class Worker(QObject):
     def result(self) -> object:
         return self._future.result()
 
+    def wait(self):
+        self._future.result()
+
 
 class WorkerThread(QThread):
     def __init__(self, function, *args, **kwargs):
@@ -48,6 +51,9 @@ class WorkerThread(QThread):
     finished_signal = pyqtSignal()
     error_signal = pyqtSignal(str)
 
+    def join(self):
+        self._worker.wait()
+
 
 def test_worker():
     app = QApplication([])
@@ -57,6 +63,8 @@ def test_worker():
     worker.finished_signal.connect(lambda: print("Finished"))
     worker.start()
     print("Started")
+    worker.join()
+    print("Done")
     app.exec()
 
 

@@ -1,5 +1,7 @@
 import re
 import subprocess
+
+from proxy import Proxy, EmptyProxy
 from utils.worker import WorkerThread
 
 from GLOBAL import GLOBAL
@@ -104,6 +106,28 @@ class Terminal:
         """Open an emulator using emulator -avd."""
         worker = WorkerThread(cls.execute_command, f'{GLOBAL.PATH.ANDROID_EMULATOR_PATH}\\emulator -avd {avd_name}')
         worker.start()
+        worker.join()
+
+    @classmethod
+    def update_parameters(cls, avd_name, account_name, proxy: Proxy | EmptyProxy):
+        # TODO: implement account name
+        # command = f''
+        # worker = WorkerThread(cls.execute_command, command)
+        # worker.start()
+        # worker.join()
+
+        if proxy is not EmptyProxy:
+            command = f'{GLOBAL.PATH.AVD_MANAGER_PATH} create avd -n {avd_name} -p {proxy}'
+            worker = WorkerThread(cls.execute_command, command)
+            worker.start()
+            worker.join()
+
+        command = f'exit'
+        worker = WorkerThread(cls.execute_command, command)
+        worker.start()
+        worker.join()
+
+
 """
 test
 """

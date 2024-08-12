@@ -9,6 +9,7 @@ from ui.account_form import AccountForm
 from ui.account_selector import AccountSelector
 from ui.phone_account_form import PhoneAccountForm
 from ui.phone_account_selector import PhoneAccountSelector
+from ui.phone_account_update_parameter_selector import PhoneAccountUpdateParameterSelector
 from ui.update_account_form import UpdateAccountForm
 from ui.delete_accounts_selector import DeleteAccountsSelector
 from helpers import open_account, updated_account_cookies, delete_accounts, create_and_save_phone_emulator
@@ -60,9 +61,9 @@ class MainWindow(QWidget):
         self.open_emulator_button.clicked.connect(self.open_emulator)
         self.layout.addWidget(self.open_emulator_button)
 
-        self.update_phone_emulator_button = QPushButton("Update Phone Emulator")
-        self.update_phone_emulator_button.clicked.connect(self.update_phone_emulator_select)
-        self.layout.addWidget(self.update_phone_emulator_button)
+        # self.update_phone_emulator_button = QPushButton("Update Phone Emulator")
+        # self.update_phone_emulator_button.clicked.connect(self.update_phone_emulator_select)
+        # self.layout.addWidget(self.update_phone_emulator_button)
 
         self.delete_phone_emulator_button = QPushButton("Delete Phone Emulator")
         self.delete_phone_emulator_button.clicked.connect(self.delete_phone_emulator_select)
@@ -151,7 +152,9 @@ class MainWindow(QWidget):
         self.phone_account_selector.show()
 
     def update_phone_emulator(self, phone_account):
-        self.phone_account_selector.close()
+        self.phone_account_updated = PhoneAccountUpdateParameterSelector(phone_account)
+        self.phone_account_updated.show()
+        # self.phone_account_selector.close()
 
     def delete_phone_emulator_select(self):
         self.phone_account_selector.phone_account_selected.connect(self.delete_phone_emulator)
