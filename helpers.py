@@ -211,7 +211,7 @@ def create_and_save_phone_emulator(image_name=None, device_name=None, avd_name=N
 
     def run():
         terminal.execute_command(
-            f'{GLOBAL.PATH.CMDLINE_TOOLS_PATH}\\avdmanager.bat create avd -n {avd_name} -k "system-images;android-35;google_apis_playstore_ps16k;x86_64" -d {device_name}')
+            f'{GLOBAL.PATH.CMDLINE_TOOLS_PATH}\\avdmanager.bat create avd -n {avd_name} -k "{image_name}" -d {device_name}')
         # terminal.execute_command(
         #     f'{GLOBAL.PATH.PLATFORM_TOOLS_PATH}\\adb.bat -s {proxy}emu.launcher name {avd_name} {image_name}'
         # )
