@@ -114,7 +114,7 @@ class PhoneAccountForm(QWidget):
         new_emulator = Phone_emulator(
             id=str(uuid.uuid4()),
             avd_name=self.avd_name,
-            account_name=self.avd_name_input.text(),
+            account_name=self.avd_name,
             proxy=EmptyProxy.to_user_format_string(EmptyProxy()), )
         session.add(new_emulator)
         session.commit()
